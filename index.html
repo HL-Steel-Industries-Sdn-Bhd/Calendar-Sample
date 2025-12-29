@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简洁日期选择器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .date-picker-container {
+            position: relative;
+            margin: 20px 0;
+        }
+        
+        .date-label {
+            display: block;
+            text-align: left;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        /* 日期输入框样式 */
+        .date-input {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: #f8f9fa;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            outline: none;
+            font-family: inherit;
+        }
+        
+        .date-input:hover {
+            background: #f1f3f4;
+            border-color: #3498db;
+        }
+        
+        .date-input:focus {
+            border-color: #2980b9;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        /* 日历图标 */
+        .date-input::-webkit-calendar-picker-indicator {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%233498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>') no-repeat;
+            background-position: center;
+            width: 24px;
+            height: 24px;
+            opacity: 0.7;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .date-input::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+        }
+        
+        /* 移除Firefox的默认样式 */
+        .date-input::-moz-focus-inner {
+            border: 0;
+        }
+        
+        /* 日期显示区域 */
+        .date-display {
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f6f9fc 0%, #ffffff 100%);
+            border-radius: 12px;
+            border-left: 4px solid #3498db;
+            animation: slideUp 0.4s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .selected-date {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .date-details {
+            font-size: 14px;
+            color: #7f8c8d;
+            line-height: 1.5;
+        }
+        
+        /* 操作按钮 */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #2c3e50;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+            border-color: #ced4da;
+        }
+        
+        /* 提示信息 */
+        .hint {
+            margin-top: 25px;
+            padding: 15px;
+            background: #fff8e1;
+            border-radius: 10px;
+            border-left: 4px solid #ffc107;
+            font-size: 13px;
+            color: #856404;
+            text-align: left;
+            line-height: 1.5;
+        }
+        
+        .hint strong {
+            color: #d39e00;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px;
+                border-radius: 15px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            .date-input {
+                padding: 14px 18px;
+                font-size: 15px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+        
+        /* 暗色模式支持 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            }
+            
+            .container {
+                background: #2d3436;
+                color: #dfe6e9;
+            }
+            
+            h1, .date-label, .selected-date {
+                color: #dfe6e9;
+            }
+            
+            .date-input {
+                background: #3c4245;
+                border-color: #4a4e52;
+                color: #dfe6e9;
+            }
+            
+            .date-input:hover {
+                background: #464c50;
+                border-color: #3498db;
+            }
+            
+            .date-input:focus {
+                background: #40464a;
+            }
+            
+            .date-input::-webkit-calendar-picker-indicator {
+                filter: invert(0.8);
+            }
+            
+            .date-display {
+                background: #3c4245;
+                border-left-color: #3498db;
+            }
+            
+            .date-details {
+                color: #b2bec3;
+            }
+            
+            .btn-secondary {
+                background: #3c4245;
+                color: #dfe6e9;
+                border-color: #4a4e52;
+            }
+            
+            .btn-secondary:hover {
+                background: #464c50;
+            }
+            
+            .hint {
+                background: #4a3c00;
+                color: #ffeaa7;
+                border-left-color: #ffc107;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📅 日期选择器</h1>
+        <p class="subtitle">点击日历图标或输入框选择日期</p>
+        
+        <div class="date-picker-container">
+            <label class="date-label">选择日期</label>
+            <input type="date" 
+                   id="datePicker" 
+                   class="date-input"
+                   min="2000-01-01" 
+                   max="2030-12-31"
+                   value="2025-12-30">
+        </div>
+        
+        <div id="dateDisplay" class="date-display" style="display: none;">
+            <div class="selected-date" id="selectedDate"></div>
+            <div class="date-details" id="dateDetails"></div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="showSelectedDate()">
+                显示选择日期
+            </button>
+            <button class="btn btn-secondary" onclick="setToday()">
+                设为今天
+            </button>
+        </div>
+        
+        <div class="hint">
+            <strong>💡 使用提示：</strong><br>
+            1. 点击日历图标打开日期选择器<br>
+            2. 使用键盘方向键快速导航<br>
+            3. 可以直接输入日期 (YYYY-MM-DD)<br>
+            4. 在移动设备上会显示原生日期选择器
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const datePicker = document.getElementById('datePicker');
+        const dateDisplay = document.getElementById('dateDisplay');
+        const selectedDate = document.getElementById('selectedDate');
+        const dateDetails = document.getElementById('dateDetails');
+        
+        // 初始化时设置今天为默认值
+        function setToday() {
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            datePicker.value = formattedDate;
+            showSelectedDate();
+        }
+        
+        // 显示选择的日期
+        function showSelectedDate() {
+            const dateValue = datePicker.value;
+            
+            if (!dateValue) {
+                alert('请先选择日期');
+                return;
+            }
+            
+            // 格式化日期显示
+            const date = new Date(dateValue + 'T00:00:00');
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            
+            const formattedDate = date.toLocaleDateString('zh-CN', options);
+            const dayOfYear = getDayOfYear(date);
+            const weekNumber = getWeekNumber(date);
+            const daysUntilNextYear = getDaysUntilNextYear(date);
+            
+            selectedDate.textContent = formattedDate;
+            dateDetails.innerHTML = `
+                年度第 ${dayOfYear} 天 | 第 ${weekNumber} 周<br>
+                距离年底还有 ${daysUntilNextYear} 天
+            `;
+            
+            dateDisplay.style.display = 'block';
+        }
+        
+        // 计算是一年中的第几天
+        function getDayOfYear(date) {
+            const start = new Date(date.getFullYear(), 0, 0);
+            const diff = date - start;
+            const oneDay = 1000 * 60 * 60 * 24;
+            return Math.floor(diff / oneDay);
+        }
+        
+        // 计算是第几周（简易算法）
+        function getWeekNumber(date) {
+            const firstDay = new Date(date.getFullYear(), 0, 1);
+            const pastDays = (date - firstDay) / 86400000;
+            return Math.ceil((pastDays + firstDay.getDay() + 1) / 7);
+        }
+        
+        // 计算距离年底还有多少天
+        function getDaysUntilNextYear(date) {
+            const nextYear = new Date(date.getFullYear() + 1, 0, 1);
+            const diff = nextYear - date;
+            return Math.floor(diff / (1000 * 60 * 60 * 24));
+        }
+        
+        // 监听日期变化
+        datePicker.addEventListener('change', showSelectedDate);
+        
+        // 页面加载时显示当前日期
+        window.onload = showSelectedDate;
+        
+        // 添加键盘快捷键
+        document.addEventListener('keydown', function(event) {
+            // Ctrl + T 设为今天
+            if (event.ctrlKey && event.key === 't') {
+                event.preventDefault();
+                setToday();
+            }
+            
+            // Enter 键显示选择日期
+            if (event.key === 'Enter' && document.activeElement === datePicker) {
+                showSelectedDate();
+            }
+        });
+        
+        // 显示键盘快捷键提示
+        console.log('📌 键盘快捷键：');
+        console.log('Ctrl + T = 设为今天');
+        console.log('在日期输入框按 Enter = 显示选择日期');
+    </script>
+</body>
+</html>
